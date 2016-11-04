@@ -1,0 +1,126 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.stj.fphealth"
+    android:versionCode="1"
+    android:versionName="1.0"
+    >
+
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="23" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
+    <uses-permission android:name="android.permission.DEVICE_POWER"/>
+    <application
+        android:name="cn.stj.fphealth.app.FPHealthApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".activity.HealthMainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustNothing"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter >
+                <action android:name="android.intent.action.HEALTH" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.SplashActivity"
+            android:label="@string/app_name"
+            android:launchMode="standard"
+            android:theme="@style/AppTheme" >
+        </activity>
+
+        <service
+            android:name=".service.HealthService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.stj.fphealth.action.HealthService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.HeartbeatService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.stj.fphealth.action.HeartbeatService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.StepService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.stj.fphealth.action.StepService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.BootService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.stj.fphealth.action.BootService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.LocationUploadService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.stj.fphealth.action.LocationUploadService" />
+            </intent-filter>
+        </service>
+        <service android:name=".service.RemindVoiceService"/>
+        
+        <service android:name=".service.RemindService"
+            android:exported="false">
+        </service>
+
+        <receiver android:name=".receiver.HeartbeatReceiver" />
+        <receiver android:name=".receiver.StepReceiver" />
+        <receiver android:name=".receiver.NetworkStateReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.PhoneReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.BootCompletedReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.LocationUploadReceiver" />
+        <receiver android:name=".receiver.HeartbeatOpenReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.OPEN_HEART_RATE" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.RemindReceiver" />
+    </application>
+
+</manifest>

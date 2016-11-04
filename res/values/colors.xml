@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="main_bg_color">#8E8E8E</color>
+    <color name="white_color">#FFFFFF</color>
+    <color name="black_color">#000000</color>
+    <color name="theme_title_color">#DEFFFFFF</color>
+    <color name="theme_primarydark_color">#455A64</color>
+    <color name="theme_primary_color">#607D8B</color>
+    <color name="theme_windowBackground">#607D8B</color>
+    <color name="dark_gray_color">#827E6F</color>
+    <color name="light_gray_color">#F2F1F0</color>
+    <color name="gray_color">#D7DCD6</color>
+    <color name="green_color">#2ABF1D</color>
+    <color name="btn_redetect_nor_color">#2ABF1D</color>
+    <color name="btn_redetect_pre_color">#25A619</color>
+    <color name="transparent_color">#00000000</color>
+    <color name="remind_item_bg_hi">#9C9C8C</color>
+    <color name="remind_item_divider_color">#9C9C8C</color>
+    <color name="red_color">#BB4E42</color>
+    <color name="network_unavailable_color">#D9A41C</color>
+</resources>

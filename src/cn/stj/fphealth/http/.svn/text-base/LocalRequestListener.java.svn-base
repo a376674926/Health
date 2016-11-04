@@ -1,0 +1,33 @@
+package com.chinacnit.taoa.http;
+
+/**
+ * 对外提供执行请求回调接口
+ * Created by jackey on 2015/6/26.
+ */
+public interface LocalRequestListener {
+
+    /**
+     * 在请求之前调用的方法
+     */
+    public  void onPreRequest();
+
+    /**
+     * 请求成功调用
+     * @param response
+     */
+    public  void onRequestSuccess(String response);
+
+    /**
+     * 请求失败调用
+     * @param code
+     * @param msg
+     */
+    public  void onRequestError(int code, String msg);
+
+    /**
+     * 服务器返回失败调用
+     * @param code
+     * @param msg
+     */
+    public  void onRequestFail(int code, String msg);
+}

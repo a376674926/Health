@@ -1,0 +1,41 @@
+package com.chinacnit.taoa.http;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.toolbox.HttpClientStack;
+import com.chinacnit.taoa.TaoaAppliction;
+import com.chinacnit.taoa.http.upload.volley.MultiPartRequest;
+import com.chinacnit.taoa.http.upload.volley.PerformMultiPartRequest;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+
+import java.io.IOException;
+import java.util.Map;
+
+/**
+ * Created by zouzhiyi on 2015/6/25.
+ * 为Volley 设置 HttpClient.只有DefaultHttpClient才会维护cookie
+ */
+public class ECityStack extends HttpClientStack {
+    @SuppressWarnings("unused")
+    private static final String TAG = ECityStack.class.getSimpleName();
+    private final static String HEADER_CONTENT_TYPE = "Content-Type";
+    public ECityStack(){
+        this(ECityHttpClient.newInstance(TaoaAppliction.getInstance()));
+    }
+    public ECityStack(HttpClient client) {
+        super(client);
+    }
+
+    @Override
+    public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeaders) throws IOException, AuthFailureError {
+        if(!(request instanceof MultiPartRequest)) {
+            return super.performRequest(request, additionalHeaders);
+        }
+        else {
+            return new PerformMultiPartRequest().performMultiPartRequest(request, additionalHeaders);
+        }
+    }
+
+}

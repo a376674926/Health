@@ -1,0 +1,36 @@
+package com.chinacnit.taoa.http;
+
+/**
+ * 账户相关请求的回调接口
+ * Created by lmye on 2015/8/12.
+ */
+public interface AccountQuestListener {
+
+    /**
+     * 在请求之前调用的方法
+     */
+    public void onPreRequest();
+
+    /**
+     * 请求成功调用
+     *
+     * @param response
+     */
+    public void onRequestSuccess(AccountResponse response);
+
+    /**
+     * 请求失败调用 404等
+     *
+     * @param code
+     * @param msg
+     */
+    public void onRequestError(int code, String msg);
+
+    /**
+     * 根据服务器返回success = false时调用
+     *
+     * @param code
+     * @param msg
+     */
+    public void onRequestFail(int code, String msg);
+}

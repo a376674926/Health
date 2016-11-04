@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/biznest-006/!svn/ver/8352/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http
+END
+VolleyUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/biznest-006/!svn/ver/7382/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/VolleyUtil.java
+END
+BaseRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/biznest-006/!svn/ver/8145/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/BaseRequest.java
+END
+AccountResponse.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/biznest-006/!svn/ver/8174/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/AccountResponse.java
+END
+VolleyErrorHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/biznest-006/!svn/ver/7184/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/VolleyErrorHelper.java
+END
+AccountQuestListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/biznest-006/!svn/ver/8174/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/AccountQuestListener.java
+END
+ECityStack.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/biznest-006/!svn/ver/8145/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/ECityStack.java
+END
+VolleyClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/biznest-006/!svn/ver/8174/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/VolleyClient.java
+END
+LocalRequestListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/biznest-006/!svn/ver/7304/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/LocalRequestListener.java
+END
+ECityHttpClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/biznest-006/!svn/ver/7767/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/ECityHttpClient.java
+END
+RequestListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/biznest-006/!svn/ver/7510/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/RequestListener.java
+END
+BaseResponse.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/biznest-006/!svn/ver/7679/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/BaseResponse.java
+END
+AccountRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/biznest-006/!svn/ver/8174/AndroidPlatform/TaoA/app/src/main/java/com/chinacnit/taoa/http/AccountRequest.java
+END

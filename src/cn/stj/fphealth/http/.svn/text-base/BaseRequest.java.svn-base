@@ -1,0 +1,127 @@
+package com.chinacnit.taoa.http;
+
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.chinacnit.taoa.commom.Constants;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
+import java.util.Map;
+
+/**
+ * 请求封装类
+ * Created by jackey on 2015/6/26.
+ */
+public class BaseRequest<T> extends Request<BaseResponse> {
+    private Response.Listener<BaseResponse> mListener;
+    private Map<String, String> mParams;
+    private String url;
+
+    public BaseRequest(int method, String url, Map<String, String> params, Response.Listener listener, Response.ErrorListener Errorlistener) {
+        super(method, url, Errorlistener);
+
+        this.url = url;
+        mListener = listener;
+        this.mParams = params;
+    }
+
+
+    @Override
+    protected Response<BaseResponse> parseNetworkResponse(NetworkResponse response) {
+        try {
+            String jsonString = new String(response.data,
+                    HttpHeaderParser.parseCharset(response.headers));
+            BaseResponse baseResponse = parseJson(jsonString);
+            return Response.success(baseResponse, HttpHeaderParser.parseCacheHeaders(response));
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            Log.d(VolleyClient.TAG,"parseNetworkResponse fail");
+            Log.w(VolleyClient.TAG,""+e.getLocalizedMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void deliverResponse(BaseResponse response) {
+        mListener.onResponse(response);
+    }
+
+    @Override
+    protected Map<String, String> getParams() throws AuthFailureError {
+        return mParams;
+    }
+
+    private BaseResponse parseJson(String json) {
+        showLog(url,mParams,json);
+        int result = 0;
+        String note = null;
+        String data = null;
+        if (TextUtils.isEmpty(json)){
+            Log.d(VolleyClient.TAG, "the Request:"+url+" return json is null");
+            BaseResponse response = new BaseResponse();
+            response.setResultCode(-1);
+            response.setNote("服务器访问失败");
+            response.setData(data);
+
+            return response;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            result = jsonObject.has("result") ? jsonObject.getInt("result") : 1;
+            note = jsonObject.has("note") ? jsonObject.getString("note") : "";//只有异常时才有有note
+            data = jsonObject.has("data") ? jsonObject.getString("data") : "";
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        BaseResponse response = new BaseResponse();
+        response.setResultCode(result);
+        response.setNote(note);
+        response.setData(data);
+
+        return response;
+
+    }
+
+    /**
+     * 正式发布后，必须将DEBUGE 设置为false
+     *
+     * @param url
+     * @param params
+     */
+    private void showLog(String url, Map<String, String> params,String json) {
+        if (!Constants.IS_DEBUGE) {
+            return;
+        }
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("the Request:");
+        buffer.append(url);
+        if (params != null) {
+            buffer.append(" request params[");
+            Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, String> entry = iterator.next();
+                buffer.append(entry.getKey());
+                buffer.append("=");
+                buffer.append(entry.getValue());
+                buffer.append(" ");
+            }
+            buffer.append("]");
+        }
+        buffer.append(" return json = " + json);
+        Log.d(VolleyClient.TAG, buffer.toString());
+    }
+
+}

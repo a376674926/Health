@@ -1,0 +1,72 @@
+package com.chinacnit.taoa.http;
+
+import android.text.TextUtils;
+
+import com.chinacnit.taoa.utils.JsonUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 响应结果封装类
+ * Created by jackey on 2015/6/26.
+ */
+public class BaseResponse {
+
+    //异常
+    public static final int ERROR = -1 ;
+    //成功
+    public static final int SUCCESS = 1 ;
+    //失败
+    public static final int FAIL = 0 ;
+
+    //响应结果的返回状态
+    private Integer result;
+    //响应异常信息
+    private String note;
+    //响应结果的内容
+    private String data;
+
+    public Integer getResult() {
+        return result;
+    }
+
+    public void setResultCode(Integer result) {
+        this.result = result;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public boolean isSuccess(){
+        return result == SUCCESS ;
+    }
+
+    public <T> T getObj(Class<T> clz) {
+        if (TextUtils.isEmpty(data))
+            return null;
+        return JsonUtil.getData(data, clz);
+    }
+
+
+    public <T> List<T> getList(Class<T> clz) {
+        List<T> list = new ArrayList<T>();
+        if (TextUtils.isEmpty(data))
+            return null ;
+        list = JsonUtil.getDatas(data, clz);
+        return list;
+    }
+}

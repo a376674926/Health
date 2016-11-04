@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <include layout="@layout/fragment_page_topbar" />
+
+    <RelativeLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal" >
+
+        <TextView
+            style="@style/page_text_style"
+            android:id="@+id/tv_hight_low_pressure_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/hight_and_low_pressure_label"
+            android:textSize="@dimen/text_size_25" />
+
+        <TextView
+            style="@style/page_text_style"
+            android:id="@+id/tv_hight_Low_pressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_hight_low_pressure_label"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="3dp"
+            android:gravity="center"
+            android:text="@string/hight_and_low_pressure"
+            android:textSize="@dimen/text_size_25" />
+    </RelativeLayout>
+
+    <Button
+        style="@style/page_text_style"
+        android:id="@+id/btn_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/btn_page_start_selector"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="30dp"
+        android:text="@string/start"
+        android:textSize="@dimen/text_size_20" />
+
+</RelativeLayout>

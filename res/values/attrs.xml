@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="circlebar">
+        <attr name="middleText" format="string" />
+        <attr name="middleTextSize" format="integer" />
+    </declare-styleable>
+</resources>

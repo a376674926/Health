@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+
+    <dbname value="fphealth_db" >
+    </dbname>
+
+    <version value="1" >
+    </version>
+
+    <list>
+
+        <mapping class="cn.stj.fphealth.entity.HeartRate" >
+        </mapping>
+
+        <mapping class="cn.stj.fphealth.entity.Wifi" >
+        </mapping>
+
+        <mapping class="cn.stj.fphealth.entity.WifiHotspot" >
+        </mapping>
+
+        <mapping class="cn.stj.fphealth.entity.Mobile" >
+        </mapping>
+
+        <mapping class="cn.stj.fphealth.entity.MobileBaseStation" >
+        </mapping>
+
+        <mapping class="cn.stj.fphealth.entity.LocationInfo" >
+        </mapping>
+
+        <mapping class="cn.stj.fphealth.entity.RemindInfo" >
+        </mapping>
+
+        <mapping class="cn.stj.fphealth.entity.Pedometer" >
+        </mapping>
+    </list>
+
+</litepal>

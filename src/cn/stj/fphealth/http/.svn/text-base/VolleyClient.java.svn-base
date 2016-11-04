@@ -1,0 +1,421 @@
+package com.chinacnit.taoa.http;
+
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.chinacnit.taoa.R;
+import com.chinacnit.taoa.TaoaAppliction;
+import com.chinacnit.taoa.commom.Constants;
+import com.chinacnit.taoa.commom.Utils;
+import com.chinacnit.taoa.http.dto.ServiceData;
+import com.chinacnit.taoa.http.upload.UploadInfo;
+import com.chinacnit.taoa.http.upload.volley.MultiPartStringRequest;
+import com.chinacnit.taoa.utils.TaopingLogUtil;
+import com.google.gson.Gson;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.Map;
+
+/**
+ * 执行http请求处理类
+ * Created by jackey on 2015/6/26.
+ */
+public class VolleyClient {
+    public static final String TAG = "VolleyClient";
+
+    public static final boolean ISLOCAL = true;
+
+    /**
+     * The default socket timeout in milliseconds
+     */
+    public static final int DEFAULT_TIMEOUT_MS = 5000;
+
+    /**
+     * The default number of retries
+     */
+    public static final int DEFAULT_MAX_RETRIES = 2;
+
+    /**
+     * The default backoff multiplier
+     */
+    public static final float DEFAULT_BACKOFF_MULT = 1f;
+
+    private static VolleyClient mInstance;
+
+    public static VolleyClient getInstance() {
+        if (mInstance == null) {
+            mInstance = new VolleyClient();
+        }
+        return mInstance;
+    }
+
+    private VolleyClient() {
+        VolleyUtil.newRequestQueue();
+    }
+
+    /**
+     * post 方式请求数据
+     *
+     * @param url      api
+     * @param params   请求参数
+     * @param listener 请求监听
+     */
+    public void post(String url,
+                     Map<String, String> params,
+                     final RequestListener listener) {
+
+        request(Request.Method.POST, url, params, listener, null);
+    }
+
+    /**
+     * post 方式请求账户相关数据
+     *
+     * @param url
+     * @param map
+     * @param listener
+     */
+    public void accountPost(String url, Map<String, String> map, final AccountQuestListener listener) {
+        accountRequest(Request.Method.POST, url, map, listener);
+    }
+
+    /**
+     * post 方式请求数据,可取消请求
+     *
+     * @param url      api
+     * @param params   请求参数
+     * @param listener 请求监听
+     * @param tag      用于取消请求
+     */
+    public void post(String url,
+                     Map<String, String> params,
+                     final RequestListener listener, Object tag) {
+
+        request(Request.Method.POST, url, params, listener, tag);
+    }
+
+    /**
+     * post 提交数据,具有调试本地数据的功能
+     *
+     * @param url                  api
+     * @param params               请求参数
+     * @param listener             请求监听
+     * @param isLocal              是否是加载本地json
+     * @param localJsonName        本地json文件名
+     * @param localRequestListener 本地请求监听
+     */
+    public void post(String url,
+                     Map<String, String> params,
+                     RequestListener listener, boolean isLocal, final String localJsonName,
+                     final LocalRequestListener localRequestListener) {
+        if (!isLocal) {
+            request(Request.Method.POST, url, params, listener, null);
+        } else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    parseLocalJson(localJsonName, localRequestListener);
+                }
+            }).start();
+        }
+    }
+
+    /**
+     * 解析本地json文件
+     *
+     * @param localJsonName 本地json文件名
+     * @param listener      请求监听
+     */
+    private void parseLocalJson(String localJsonName, LocalRequestListener listener) {
+        if (TextUtils.isEmpty(localJsonName)) {
+            if (listener != null) {
+                listener.onRequestFail(0, "本地json名字不能为空");
+            }
+            return;
+        }
+        if (listener != null) {
+            listener.onPreRequest();
+        }
+        try {
+            InputStream inputStream = TaoaAppliction.getInstance().getAssets().open(localJsonName);
+            Gson gson = new Gson();
+            ServiceData serviceData = gson.fromJson(new InputStreamReader(inputStream), ServiceData.class);
+            if (listener != null && serviceData != null) {
+                listener.onRequestSuccess(serviceData.getData());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            if (listener != null) {
+                listener.onRequestFail(0, e.getLocalizedMessage());
+            }
+        }
+    }
+
+
+    /**
+     * get 方式请求数据
+     *
+     * @param url      api
+     * @param listener 请求监听
+     */
+    public void get(String url,
+                    final RequestListener listener) {
+        request(Request.Method.GET, url, null, listener, null);
+    }
+
+    /**
+     * get 方式请求数据 可取消请求
+     *
+     * @param url      api
+     * @param listener 请求监听
+     */
+    public void get(String url,
+                    final RequestListener listener, Object tag) {
+        request(Request.Method.GET, url, null, listener, tag);
+    }
+
+    /**
+     * 上传文件到服务器
+     *
+     * @param info
+     * @param listener
+     * @param tag
+     */
+    public void uploadFile(UploadInfo info, final RequestListener listener, Object tag) {
+        TaopingLogUtil.D(TAG, "uploadFile START");
+        if (info == null) {
+            TaopingLogUtil.D(TAG, "uploadFile FAIL info = null");
+            return;
+
+        }
+        if (TextUtils.isEmpty(info.getLocalPath())) {
+            TaopingLogUtil.D(TAG, "uploadFile FAIL file path is not null");
+            return;
+        }
+        File file = new File(info.getLocalPath());
+        if (!file.exists()) {
+            TaopingLogUtil.D(TAG, "uploadFile FAIL file path is not exists");
+            return;
+        }
+        if (listener != null)
+            listener.onPreRequest();
+        MultiPartStringRequest request = new MultiPartStringRequest(
+                Request.Method.PUT, info.getUri(), info.getParams(), new Response.Listener<BaseResponse>() {
+            public void onResponse(BaseResponse response) {
+
+                if (listener != null) {
+                    if (response.isSuccess())
+                        listener.onRequestSuccess(response);
+                    else
+                        listener.onRequestFail(response.getResult(), response.getNote());
+                }
+            }
+        }, new Response.ErrorListener() {
+            public void onErrorResponse(VolleyError error) {
+                if (error != null) {
+                    error.printStackTrace();
+                }
+                try {
+                    Log.d("", "error = " + error);
+                    String errMsg = null;
+                    int errCode = -1;
+                    if (error == null) {
+                        errMsg = TaoaAppliction.getInstance().getResources().getString(R.string.unknown_error);
+                    } else {
+                        errMsg = VolleyErrorHelper.getMessage(TaoaAppliction.getInstance(), error);
+                        errCode = error.networkResponse == null ? errCode : error.networkResponse.statusCode;
+                    }
+                    if (listener != null) {
+                        listener.onRequestError(errCode, errMsg);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        request.addFileUpload("data", file);
+        //重试参数设置
+        request.setRetryPolicy(new DefaultRetryPolicy(DEFAULT_TIMEOUT_MS, DEFAULT_MAX_RETRIES, DEFAULT_BACKOFF_MULT));
+        if (tag != null) {
+            request.setTag(tag);
+        }
+        VolleyUtil.addToRequestQueue(request);
+        TaopingLogUtil.D(TAG, "uploadFile END");
+    }
+
+    /**
+     * 利用Volley 请求数据
+     *
+     * @param method   Request.Method
+     * @param url      api
+     * @param params   请求参数
+     * @param listener 请求监听
+     */
+    public void request(int method,
+                        String url,
+                        Map<String, String> params,
+                        final RequestListener listener, Object tag) {
+        if (!Utils.checkNetwork(TaoaAppliction.getInstance())) {
+            if (listener != null) {
+                listener.onRequestFail(Constants.RESULT_ERROR_NET, TaoaAppliction.getInstance().getResources().getString(R.string.network_conn_is_unavailable));
+            }
+            return;
+        }
+
+        showLog(url, params);
+
+        if (listener != null)
+            listener.onPreRequest();
+        BaseRequest request = new BaseRequest(
+                method,
+                url,
+                params,
+                new Response.Listener<BaseResponse>() {
+                    public void onResponse(BaseResponse response) {
+
+                        if (listener != null) {
+                            if (response.isSuccess())
+                                listener.onRequestSuccess(response);
+                            else
+                                listener.onRequestFail(response.getResult(), response.getNote());
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        if (error != null) {
+                            error.printStackTrace();
+                        }
+                        try {
+                            Log.d("", "error = " + error);
+                            String errMsg = null;
+                            int errCode = -1;
+                            if (error == null) {
+                                errMsg = TaoaAppliction.getInstance().getResources().getString(R.string.unknown_error);
+                            } else {
+                                errMsg = VolleyErrorHelper.getMessage(TaoaAppliction.getInstance(), error);
+                                errCode = error.networkResponse == null ? errCode : error.networkResponse.statusCode;
+                            }
+                            if (listener != null) {
+                                listener.onRequestError(errCode, errMsg);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+        );
+        //重试参数设置
+        request.setRetryPolicy(new DefaultRetryPolicy(DEFAULT_TIMEOUT_MS, DEFAULT_MAX_RETRIES, DEFAULT_BACKOFF_MULT));
+        if (tag != null) {
+            request.setTag(tag);
+        }
+        VolleyUtil.addToRequestQueue(request);
+    }
+
+    /**
+     * 利用Volley 账户相关的接口请求数据
+     *
+     * @param method
+     * @param url
+     * @param map
+     * @param listener
+     */
+    public void accountRequest(int method, String url, Map<String, String> map, final AccountQuestListener listener) {
+        if (!Utils.checkNetwork(TaoaAppliction.getInstance())) {
+            if (listener != null) {
+                listener.onRequestFail(Constants.RESULT_ERROR_NET, TaoaAppliction.getInstance().getResources().getString(R.string.network_conn_is_unavailable));
+            }
+            return;
+        }
+        showLog(url, map);
+        if (listener != null)
+            listener.onPreRequest();
+        AccountRequest request = new AccountRequest(method, url, map, new Response.Listener<AccountResponse>() {
+            @Override
+            public void onResponse(AccountResponse accountResponse) {
+                if (accountResponse.isSuccess())
+                    listener.onRequestSuccess(accountResponse);
+                else
+                    listener.onRequestFail(-1, accountResponse.getMsg());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (volleyError != null) {
+                    volleyError.printStackTrace();
+                }
+                try {
+                    Log.d("", "error = " + volleyError);
+                    String errMsg = null;
+                    int errCode = -1;
+                    if (volleyError == null) {
+                        errMsg = TaoaAppliction.getInstance().getResources().getString(R.string.unknown_error);
+                    } else {
+                        errMsg = VolleyErrorHelper.getMessage(TaoaAppliction.getInstance(), volleyError);
+                        errCode = volleyError.networkResponse == null ? errCode : volleyError.networkResponse.statusCode;
+                    }
+                    if (listener != null) {
+                        listener.onRequestError(errCode, errMsg);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        request.setRetryPolicy(new DefaultRetryPolicy(DEFAULT_TIMEOUT_MS, DEFAULT_MAX_RETRIES, DEFAULT_BACKOFF_MULT));
+        VolleyUtil.addToRequestQueue(request);
+    }
+
+    /**
+     * 正式发布后，必须将DEBUGE 设置为false
+     *
+     * @param url
+     * @param params
+     */
+    private void showLog(String url, Map<String, String> params) {
+        if (!Constants.IS_DEBUGE) {
+            return;
+        }
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("--->>request url:");
+        buffer.append(url);
+        if (params != null) {
+            buffer.append(" request params[");
+            Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, String> entry = iterator.next();
+                buffer.append(entry.getKey());
+                buffer.append("=");
+                buffer.append(entry.getValue());
+                buffer.append(" ");
+            }
+            buffer.append("]");
+        }
+        Log.d(TAG, buffer.toString());
+    }
+
+    public void cancleRequest(Object tag) {
+        Log.d(TAG, "cancleRequest tag-->" + tag);
+        VolleyUtil.cancleRequest(tag);
+    }
+
+    /**
+     * 销毁VolleyClient
+     */
+    public void destroy() {
+        Log.d(TAG, "onDestroy");
+        VolleyUtil.cancleAllRequest();
+        mInstance = null;
+    }
+}

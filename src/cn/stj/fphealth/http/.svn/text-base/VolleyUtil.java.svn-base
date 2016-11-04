@@ -1,0 +1,47 @@
+package com.chinacnit.taoa.http;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.chinacnit.taoa.TaoaAppliction;
+
+/**
+ * Created by zouzhiyi on 2015/6/25.
+ * 获取Volley的RequestQueue实例，为了确保登录了都有sessioid
+ */
+public class VolleyUtil {
+    private static RequestQueue requestQueue;
+
+    public static RequestQueue newRequestQueue() {
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(TaoaAppliction.getInstance(), new ECityStack());
+        }
+        return requestQueue;
+    }
+
+    public static <T> void addToRequestQueue(Request<T> req) {
+        if (requestQueue == null)
+            newRequestQueue();
+        requestQueue.add(req);
+    }
+
+    /**
+     * 取消指定标记的请求
+     * @param tag
+     */
+    public static void cancleRequest(Object tag) {
+        newRequestQueue().cancelAll(tag);
+    }
+
+    /**
+     * 取消所有请求
+     */
+    public static void cancleAllRequest() {
+        newRequestQueue().cancelAll(new RequestQueue.RequestFilter() {
+            @Override
+            public boolean apply(Request<?> request) {
+                return true;
+            }
+        });
+    }
+}
